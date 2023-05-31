@@ -6,7 +6,7 @@
 /*   By: rjobert <rjobert@student.42barcelo>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 13:52:49 by rjobert           #+#    #+#             */
-/*   Updated: 2023/05/31 22:10:43 by rjobert          ###   ########.fr       */
+/*   Updated: 2023/05/31 22:14:35 by rjobert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 #include <stdio.h>
 void	CHECK_PRINT(t_list *byte)
 {
-	int i = 0;
+	int x = 0;
 	while(byte)
 	{
-		printf("%i : %s\n", i, byte->buff);
-		i++;
+		printf("%i : %s\n", x, byte->buff);
+		x++;
 		byte = byte->next;
 	}
 }
