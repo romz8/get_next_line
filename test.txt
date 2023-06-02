@@ -1,3 +1,3 @@
-Life is very short and anxious for those who forget the past, 
-neglect the present, 
-and fear the future.
+this sentence has 47 characters before new line
+this one has 30 only before nl
+this one is very long on purpose and should be not entirely into the node
