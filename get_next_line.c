@@ -17,7 +17,9 @@ void	CHECK_PRINT(t_list *byte)
 	int x = 0;
 	while(byte)
 	{
-		printf("%i : \n%s\n", x, byte->buff);
+		if (!byte)
+			printf("THE CHAIN IS NULL\n");
+		printf("NODE %i : %s\n", x, byte->buff);
 		x++;
 		byte = byte->next;
 	}
@@ -30,11 +32,14 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER <= 0)
 		return (NULL);
-	byte_list = load_chain_list(byte_list, fd);
+	line = NULL;
+	load_chain_list(&byte_list, fd);
 	if (!byte_list)
 		return (NULL);
+
 	line = get_all_line(byte_list);
-	clean_chain(&byte_list);
+	byte_list = clean_chain(&byte_list);
+	
 	return (line);
 }
 
@@ -62,6 +67,7 @@ t_list	*read_to_node(int fd, int *byte_read)
 	}
 	node->buff[*byte_read] = '\0';
 	node->next = NULL;
+	// printf("NODE CONTENT: %s \n", node->buff);
 	return (node);
 }
 	
@@ -83,24 +89,23 @@ int	ft_search_nl(t_list *node)
 
 //we receive a list - if it is null : we add a node to it which will be the first byte to be read - else we just build on prevous node
 //then as long as we have byte to read or that we don't find the \n character : we load nodes full of buffer read to the chain
-t_list	*load_chain_list(t_list *byte_list, int fd)
+void	load_chain_list(t_list **list, int fd)
 {	
 	t_list 	*node;
 	t_list	*head;
 	int		byte_read;
-	int		flag;
 
-	byte_read = 1;
-	if (!byte_list)
-		byte_list = read_to_node(fd, &byte_read);
-	head = byte_list;
-	while (byte_read != 0 && !ft_search_nl(byte_list)) 
-	{
-		node = read_to_node(fd, &byte_read);
-		byte_list->next = node;
-		byte_list = byte_list->next;
-	}
-	return (head);
+ 	byte_read = 1;
+	if (!*list)
+        *list = read_to_node(fd, &byte_read);
+    head = *list;
+	while (byte_read && !ft_search_nl(*list))
+    {
+        node = read_to_node(fd, &byte_read);
+        (*list)->next = node;
+        *list = (*list)->next;
+    }
+	*list = head;
 }
 
 //we will load all of the linked list contennt (until null or \n) into line
@@ -176,7 +181,7 @@ void	ft_load_line(char *line, int *i, t_list *node)
 // 1 - we will clean the list and the nodes 
 // 2 - we go the last node -> clone it and incorporate only the charcetrs after the next line
 // 3 - we will leave on the chain only the remaining characters so that read() will build on off 
-void	clean_chain(t_list **buff_list)
+t_list	*clean_chain(t_list **buff_list)
 {
 	t_list *handover_node;
 	t_list  *temp;
@@ -184,7 +189,7 @@ void	clean_chain(t_list **buff_list)
 	
 	byte_list = *buff_list;
 	if (!byte_list)
-		return ;
+		return (NULL);
 	while (byte_list && byte_list->next)
 	{
 		temp = byte_list->next;
@@ -193,10 +198,13 @@ void	clean_chain(t_list **buff_list)
 	}
 	handover_node = malloc(sizeof(t_list));
 	if (handover_node)
+	{
+		handover_node->next = NULL;
 		ft_passover(byte_list, &handover_node, 0 , 0);
+		byte_list->next = handover_node;
+	}
 	free_node(byte_list);
-	*buff_list = handover_node;
-	printf("PASSOVER : %s\n", (*buff_list)->buff);
+	return (handover_node);
 }
 //first we measure the length of the node in char / bytes -> then we measure when is the \n if there is one
 // if there is none (i == j) -> we return - else we create a handover node that will contains the remaining characer
@@ -207,15 +215,14 @@ void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 		j++;
 	while (byte_list->buff[i] && byte_list->buff[i] != '\n')
 		i++;
-	if (byte_list->buff[i] != '\n')
-	i++;
+	if (byte_list->buff[i] == '\n')
+		i++;
 	(*handover_node)->buff = malloc ((j - i) + 1);
 	if (!(*handover_node)->buff)
 	{
 		free(*handover_node);
 		return;
 	}
-	(*handover_node)->next = NULL;
 	j = 0;
 	while (byte_list->buff[i])
 	{
@@ -226,7 +233,7 @@ void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 	(*handover_node)->buff[j] = '\0';
 }
 
-//freeing a node and its content while respecting null pointer risk
+//freeing a node and its content while respecting null pointer / null buffer content risk
 void	free_node(t_list *node)
 {
 	if (!node)
