@@ -4,8 +4,8 @@
 
 int main(void)
 {
-    int fd = open("test2.txt", O_RDONLY);
+    int fd = open("test.txt", O_RDONLY);
     char *line;
     line = get_next_line(fd);
-    printf("%s", line);
+    printf("THE LINE IS : %s", line);
 }

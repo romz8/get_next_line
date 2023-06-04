@@ -5,15 +5,16 @@
 
 int main(void)
 {
-	int fd = open("test22.txt", O_RDONLY);
+	int fd = open("test.txt", O_RDONLY);
 	char *line;
 	int i = 0;
-	while (i < 4)
+	while (i < 2)
 	{		
  	
 		line = get_next_line(fd);
 		i++;
-		printf("%s", line);
+		printf("LINE IS : %s", line);
+		free(line);
 	}
 
 }
