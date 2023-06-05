@@ -8,12 +8,11 @@
 
 int main(void)
 {
-	int fd = open("./test/multiple_line_with_nl.txt", O_RDONLY);
+	int fd = open("./test/42_with_nl.txt", O_RDONLY);
 	char *line;
 	int i = 0;
 	while (i < 6)
 	{		
- 	
 		line = get_next_line(fd);
 		i++;
 		printf("LINE IS : %s", line);

@@ -15,21 +15,19 @@
 
 char	*get_next_line(int fd)
 {
-	char	*load;
+	//char	*load;
 	char	*line;
 	static t_list	*byte_list;
 
 	if (fd < 0 || BUFFER <= 0 || read(fd, &line, 0) < 0)
 		return (NULL);
-	load = NULL;
+	line = NULL;
 	load_chain_list(&byte_list, fd);
 	if (!byte_list)
 		return (NULL);
-	get_all_line(byte_list, &load);
-	line = ft_strdup(load);
-	free(load);
+	get_all_line(byte_list, &line);
 	clean_chain(&byte_list);
-	if (line[0] == '\0')
+	if (line[0] == '\0') // case for empty line
 	{
 		free_chain(byte_list);
 		byte_list = NULL;

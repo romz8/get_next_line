@@ -21,8 +21,7 @@ void	free_chain(t_list *list)
 	while (list)
 	{
 		temp = list->next;
-		if (list->buff)
-			free(list->buff);
+		free(list->buff);
 		free(list);
 		list = temp;
 	}
