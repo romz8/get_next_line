@@ -19,7 +19,7 @@ void	CHECK_PRINT(t_list *byte)
 	{
 		if (!byte)
 			printf("THE CHAIN IS NULL\n");
-		printf("NODE %i : %s\n", x, byte->buff);
+		printf("NODE %i : %p : %s\n", x, byte->buff, byte->buff);
 		x++;
 		byte = byte->next;
 	}
@@ -27,20 +27,29 @@ void	CHECK_PRINT(t_list *byte)
 
 char	*get_next_line(int fd)
 {
+	char	*load;
 	char	*line;
 	static t_list	*byte_list;
 
 	if (fd < 0 || BUFFER <= 0)
 		return (NULL);
-	line = NULL;
+	load = NULL;
 	load_chain_list(&byte_list, fd);
 	if (!byte_list)
 		return (NULL);
-
-	line = get_all_line(byte_list);
-	byte_list = clean_chain(&byte_list);
+	get_all_line(byte_list, &load);
+	line = ft_strdup(load);
+	free(load);
+	clean_chain(&byte_list);
 	
-	return (line);
+	if (line[0] == '\0')
+	{
+		free_chain(byte_list);
+		byte_list = NULL;
+		free(line);
+		return (NULL);
+	}
+	return (line); 
 }
 
 //we create a node and char *s inside of size BUFFER + 1 -> protect both malloc for mem alloc issues
@@ -104,32 +113,28 @@ void	load_chain_list(t_list **list, int fd)
         node = read_to_node(fd, &byte_read);
         (*list)->next = node;
         *list = (*list)->next;
-    }
+    } 
 	*list = head;
 }
 
 //we will load all of the linked list contennt (until null or \n) into line
 // 1 - measure and malloc
 //2 - copy by rolling the nodes into the "line" from the linked list with ft_load_line (using pointer passed as ref to keep array position)
-char	*get_all_line(t_list *byte_list)
+void	get_all_line(t_list *byte_list, char ** line)
 {
-	char	*line;
-	t_list	*temp;
 	int		i;
 
 	if (!byte_list)
-		return (NULL);
-	line = NULL;
-	measure_n_create(&byte_list, &line);
+		return ;
+	measure_n_create(&byte_list, line);
 	if (!line)
-		return (NULL);
+		return ;
 	i = 0;
 	while(byte_list)
 	{
 		ft_load_line(line, &i, byte_list);
 		byte_list = byte_list->next;
 	}
-	return (line);
 }
 
 //we need to use char ** to ensure the memory we allocate 
@@ -150,19 +155,19 @@ void	measure_n_create(t_list **byte_buff, char **line)
 		{
 			if (byte_list->buff[j] == '\n')
 			{
-				j++;
+				i++;
 				break ;
 			}
+			i++;
 			j++;
 		}
-		i = j;
 		byte_list = byte_list->next;
 	}
 	*line = malloc(i + 1);
 	(*line)[i] = '\0';
 }
 //from the line that we jsut mallocated, load a node, copy it's buffer into line, and roll to next node until we reach /n or EOF
-void	ft_load_line(char *line, int *i, t_list *node)
+void	ft_load_line(char **line, int *i, t_list *node)
 {
 	int	j;
 
@@ -171,17 +176,17 @@ void	ft_load_line(char *line, int *i, t_list *node)
 	j = 0;
 	while (node->buff[j] && node->buff[j] != '\n')
 	{
-		line [*i] = node->buff[j];
+		(*line)[*i] = node->buff[j];
 		*i += 1;
 		j++;
 	}
 	if (node->buff[j] == '\n')
-		line [*i] = node->buff[j]; //becasue need the nl as well
+		(*line)[*i] = node->buff[j]; //becasue need the nl as well
 }
 // 1 - we will clean the list and the nodes 
 // 2 - we go the last node -> clone it and incorporate only the charcetrs after the next line
 // 3 - we will leave on the chain only the remaining characters so that read() will build on off 
-t_list	*clean_chain(t_list **buff_list)
+void	clean_chain(t_list **buff_list)
 {
 	t_list *handover_node;
 	t_list  *temp;
@@ -189,22 +194,17 @@ t_list	*clean_chain(t_list **buff_list)
 	
 	byte_list = *buff_list;
 	if (!byte_list)
-		return (NULL);
+		return ;
 	while (byte_list && byte_list->next)
-	{
-		temp = byte_list->next;
-		free_node(byte_list);
-		byte_list = temp;
-	}
+		byte_list = byte_list->next;
 	handover_node = malloc(sizeof(t_list));
 	if (handover_node)
 	{
 		handover_node->next = NULL;
 		ft_passover(byte_list, &handover_node, 0 , 0);
-		byte_list->next = handover_node;
 	}
-	free_node(byte_list);
-	return (handover_node);
+	free_chain(*buff_list);
+	*buff_list = handover_node;
 }
 //first we measure the length of the node in char / bytes -> then we measure when is the \n if there is one
 // if there is none (i == j) -> we return - else we create a handover node that will contains the remaining characer
@@ -233,12 +233,39 @@ void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 	(*handover_node)->buff[j] = '\0';
 }
 
-//freeing a node and its content while respecting null pointer / null buffer content risk
-void	free_node(t_list *node)
+void	free_chain(t_list *list)
 {
-	if (!node)
+	t_list	*temp;
+
+	if (!list)
 		return ;
-	if (node->buff)
-		free(node->buff);
-	free(node);
+	while (list)
+	{
+		temp = list->next;
+		if (list->buff)
+			free(list->buff);
+		free(list);
+		list = temp;
+	}
+}
+
+char	*ft_strdup(const char *s1)
+{
+	int	len;
+	char	*cpy;
+	int		i;
+	
+	len = 0;
+	while (s1[len])
+		len++;
+	cpy = malloc(len + 1);
+	if (!cpy)
+		return (NULL);
+	i = 0;
+	while (s1[i])
+	{
+		cpy[i] = s1[i];
+		i++;
+	}
+	return (cpy);
 }
