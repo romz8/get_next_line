@@ -32,7 +32,6 @@ int		ft_search_nl(t_list *node);
 void	load_chain_list(t_list **buff_list, int fd);
 void	get_all_line(t_list *byte_list, char ** line);
 void	measure_n_create(t_list **byte_buff, char **line);
-void	ft_load_line(char **line, int *i, t_list *node);
 void	clean_chain(t_list **buff_list);
 void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j);
 void	free_chain(t_list *list);

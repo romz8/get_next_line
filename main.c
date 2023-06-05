@@ -5,10 +5,10 @@
 
 int main(void)
 {
-	int fd = open("./test/long_HP.txt", O_RDONLY);
+	int fd = open("./test/test2.txt", O_RDONLY);
 	char *line;
 	int i = 0;
-	while (i < 20)
+	while (i < 6)
 	{		
  	
 		line = get_next_line(fd);
