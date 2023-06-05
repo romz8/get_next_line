@@ -19,7 +19,7 @@ char	*get_next_line(int fd)
 	char	*line;
 	static t_list	*byte_list;
 
-	if (fd < 0 || BUFFER <= 0)
+	if (fd < 0 || BUFFER <= 0 || read(fd, &line, 0) < 0)
 		return (NULL);
 	load = NULL;
 	load_chain_list(&byte_list, fd);
@@ -125,7 +125,6 @@ void	get_all_line(t_list *byte_list, char ** line)
 void	clean_chain(t_list **buff_list)
 {
 	t_list *handover_node;
-	t_list  *temp;
 	t_list  *byte_list;
 	
 	byte_list = *buff_list;

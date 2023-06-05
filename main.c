@@ -2,10 +2,13 @@
 #include <fcntl.h>
 #include "get_next_line.h"
 
+# define YELLOW "\033[1;33m"
+# define RED "\033[1;31m"
+# define RESET "\033[0m"
 
 int main(void)
 {
-	int fd = open("./test/test2.txt", O_RDONLY);
+	int fd = open("./test/multiple_line_with_nl.txt", O_RDONLY);
 	char *line;
 	int i = 0;
 	while (i < 6)

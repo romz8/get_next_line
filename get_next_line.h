@@ -14,9 +14,6 @@
 # define GET_NEXT_LINE_H
 
 # define BUFFER 20
-# define YELLOW "\033[1;33m"
-# define RED "\033[1;31m"
-# define RESET "\033[0m"
 # include <unistd.h>
 # include <stdlib.h>
 typedef struct s_list
@@ -36,6 +33,5 @@ void	clean_chain(t_list **buff_list);
 void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j);
 void	free_chain(t_list *list);
 char	*ft_strdup(const char *s1);
-
 
 #endif
