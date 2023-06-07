@@ -6,16 +6,19 @@
 /*   By: rjobert <rjobert@student.42barcelo>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 13:49:01 by rjobert           #+#    #+#             */
-/*   Updated: 2023/06/02 13:40:26 by rjobert          ###   ########.fr       */
+/*   Updated: 2023/06/07 12:47:35 by rjobert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# define BUFFER 20
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 8
+# endif
 # include <unistd.h>
 # include <stdlib.h>
+#include <stdio.h> //WARNING !!!!!!!!!!!!!!!!!
 typedef struct s_list
 {
 	char	*buff;
@@ -32,6 +35,6 @@ void	measure_n_create(t_list **byte_buff, char **line);
 void	clean_chain(t_list **buff_list);
 void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j);
 void	free_chain(t_list *list);
-char	*ft_strdup(const char *s1);
+int	clean_read(int byte_read, t_list **list);
 
 #endif

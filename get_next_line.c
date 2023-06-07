@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
 char	*get_next_line(int fd)
 {
@@ -19,7 +18,7 @@ char	*get_next_line(int fd)
 	char	*line;
 	static t_list	*byte_list;
 
-	if (fd < 0 || BUFFER <= 0 || read(fd, &line, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line, 0) < 0)
 		return (NULL);
 	line = NULL;
 	load_chain_list(&byte_list, fd);
@@ -46,13 +45,13 @@ t_list	*read_to_node(int fd, int *byte_read)
 	node = malloc(sizeof(t_list));
 	if (!node)
 		return (NULL);
-	node->buff = malloc(BUFFER + 1);
+	node->buff = malloc(BUFFER_SIZE + 1);
 	if (!node->buff)
 	{
 		free(node);
 		return (NULL);
 	}
-	*byte_read = read(fd, node->buff, BUFFER);
+	*byte_read = read(fd, node->buff, BUFFER_SIZE);
 	if (*byte_read < 0)
 	{
 		free(node->buff);
@@ -79,12 +78,12 @@ void	load_chain_list(t_list **list, int fd)
 	if (!*list)
         *list = read_to_node(fd, &byte_read);
     head = *list;
-	while (byte_read && !ft_search_nl(*list))
+	while (byte_read > 0 && !ft_search_nl(*list))
     {
         node = read_to_node(fd, &byte_read);
-        (*list)->next = node;
+		(*list)->next = node;
         *list = (*list)->next;
-    } 
+    }
 	*list = head;
 }
 

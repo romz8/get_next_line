@@ -27,27 +27,6 @@ void	free_chain(t_list *list)
 	}
 }
 
-char	*ft_strdup(const char *s1)
-{
-	int	len;
-	char	*cpy;
-	int		i;
-	
-	len = 0;
-	while (s1[len])
-		len++;
-	cpy = malloc(len + 1);
-	if (!cpy)
-		return (NULL);
-	i = 0;
-	while (s1[i])
-	{
-		cpy[i] = s1[i];
-		i++;
-	}
-	return (cpy);
-}
-
 int	ft_search_nl(t_list *node)
 {
 	int i;
