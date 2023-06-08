@@ -10,29 +10,14 @@
 
 int main(void)
 {
-	int fd = open("./test/42_with_nl.txt", O_RDONLY);
+	int fd = open("./test/long_HP.txt", O_RDONLY);
 	char *line;
 	int i = 0;
-	while (i < 4)
+	while (i < 20)
 	{		
 		line = get_next_line(fd);
 		printf("LINE IS : %s", line);
-		if ( i == 1)
-		{
-			char *c = "1";
-			if (strcmp (line, c))
-			{
-				printf(RED"NOT OK\n"RESET);
-				printf("%s", line);
-				printf("%s", c);
-			}
-		}
-		else if (i == 2)
-		{
-			if (line != NULL)
-				printf(RED"NOT OK\n"RESET);
 		free(line);
-		}
 		i++;
 	}
 	return (0);

@@ -25,6 +25,7 @@ void	free_chain(t_list *list)
 		free(list);
 		list = temp;
 	}
+	list = NULL;
 }
 
 int	ft_search_nl(t_list *node)
@@ -76,6 +77,7 @@ void	measure_n_create(t_list **byte_buff, char **line)
 //first we measure the length of the node in char / bytes -> then we measure when is the \n if there is one
 // if there is none (i == j) -> we return - else we create a handover node that will contains the remaining characer
 //the purpose is to pass the remaining char in static t_list for the next line 
+
 void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 {
 	while (byte_list->buff[j])
@@ -98,4 +100,16 @@ void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 		j++;
 	}
 	(*handover_node)->buff[j] = '\0';
+}
+
+void ft_print_chain(t_list **list)
+{
+	t_list *head = *list;
+	if (!*list)
+		return ;
+	while (head)
+	{
+		printf("%s", head->buff);
+		head = head->next;
+	}
 }
