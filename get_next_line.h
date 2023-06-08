@@ -29,7 +29,7 @@ typedef struct s_list
 char	*get_next_line(int fd);
 t_list	*read_to_node(int fd, int *byte_read);
 int		ft_search_nl(t_list *node);
-void	load_chain_list(t_list **list, int fd, int *read_error);
+void	load_chain_list(t_list **list, int fd);
 void	get_all_line(t_list *byte_list, char ** line);
 void	measure_n_create(t_list **byte_buff, char **line);
 void	clean_chain(t_list **byte_list);

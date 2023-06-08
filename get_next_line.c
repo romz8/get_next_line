@@ -15,7 +15,6 @@
 char	*get_next_line(int fd)
 {
 	char	*line;
-	int		read_error;
 	static t_list	*byte_list;
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line, 0) < 0)
@@ -25,12 +24,9 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	line = NULL;
-	read_error = 0;
-	load_chain_list(&byte_list, fd, &read_error);
-	if (!byte_list || read_error == -1)
-	{
+	load_chain_list(&byte_list, fd);
+	if (!byte_list)
 		return (NULL);
-	}
 	get_all_line(byte_list, &line);
 	clean_chain(&byte_list);
 	if (line[0] == '\0') // case for empty line
@@ -43,9 +39,8 @@ char	*get_next_line(int fd)
 	return (line); 
 }
 
-//we create a node and char *s inside of size BUFFER + 1 -> protect both malloc for mem alloc issues
-//read into it -> free node and its content if reading issue, then null terminate the content and return the node
-
+/*we create a node and char *s inside of size BUFFER + 1 -> protect both malloc for mem alloc issues
+read into it -> free node and its content if reading issue, then null terminate the content and return the node */
 t_list	*read_to_node(int fd, int *byte_read)
 {
 	t_list	*node;
@@ -68,13 +63,12 @@ t_list	*read_to_node(int fd, int *byte_read)
 	}
 	node->buff[*byte_read] = '\0';
 	node->next = NULL;
-	// printf("NODE CONTENT: %s \n", node->buff);
 	return (node);
 }
 
 //we receive a list - if it is null : we add a node to it which will be the first byte to be read - else we just build on prevous node
 //then as long as we have byte to read or that we don't find the \n character : we load nodes full of buffer read to the chain
-void	load_chain_list(t_list **list, int fd, int *read_error)
+void	load_chain_list(t_list **list, int fd)
 {	
 	t_list 	*node;
 	t_list	*head;
@@ -83,15 +77,21 @@ void	load_chain_list(t_list **list, int fd, int *read_error)
 	byte_read = 1;
 	if (!*list)
         *list = read_to_node(fd, &byte_read);
+		if (*list == NULL)
+			return  ;
     head = *list;
 	while (byte_read > 0 && !ft_search_nl(*list))
     {
         node = read_to_node(fd, &byte_read);
+		if (!node)
+		{
+			free_chain(head);
+			*list = NULL;
+			return ;
+		} 
 		(*list)->next = node;
         *list = (*list)->next;
     }
-	if (byte_read < 0)
-		*read_error = -1;
 	*list = head;
 }
 
@@ -106,7 +106,7 @@ void	get_all_line(t_list *byte_list, char ** line)
 	if (!byte_list)
 		return ;
 	measure_n_create(&byte_list, line);
-	if (!line)
+	if (*line == NULL)
 		return ;
 	i = 0;
 	while(byte_list)

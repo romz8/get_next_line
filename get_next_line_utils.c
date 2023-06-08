@@ -70,14 +70,15 @@ void	measure_n_create(t_list **byte_buff, char **line)
 		}
 		byte_list = byte_list->next;
 	}
-	*line = malloc(i + 1);
-	(*line)[i] = '\0';
+	*line = malloc((i + 1) * sizeof(char));
+	if (*line)
+		(*line)[i] = '\0';
+	else
+		*line = NULL;
 }
-
 //first we measure the length of the node in char / bytes -> then we measure when is the \n if there is one
 // if there is none (i == j) -> we return - else we create a handover node that will contains the remaining characer
 //the purpose is to pass the remaining char in static t_list for the next line 
-
 void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 {
 	while (byte_list->buff[j])
