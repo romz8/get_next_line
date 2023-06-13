@@ -21,7 +21,6 @@ void	free_chain(t_list *list)
 	while (list)
 	{
 		temp = list->next;
-		free(list->buff);
 		free(list);
 		list = temp;
 	}
@@ -85,12 +84,6 @@ void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 		i++;
 	if (byte_list->buff[i] == '\n')
 		i++;
-	(*handover_node)->buff = malloc ((j - i) + 1);
-	if (!(*handover_node)->buff)
-	{
-		free(*handover_node);
-		return ;
-	}
 	j = 0;
 	while (byte_list->buff[i])
 	{
@@ -98,7 +91,8 @@ void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 		i++;
 		j++;
 	}
-	(*handover_node)->buff[j] = '\0';
+	while ((*handover_node)->buff[j])
+		(*handover_node)->buff[j] = '\0';
 }
 
 int	check_line_over(char **line, t_list *list)

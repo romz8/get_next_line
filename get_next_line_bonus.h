@@ -6,7 +6,7 @@
 /*   By: rjobert <rjobert@student.42barcelo>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 13:49:01 by rjobert           #+#    #+#             */
-/*   Updated: 2023/06/12 17:11:20 by rjobert          ###   ########.fr       */
+/*   Updated: 2023/06/13 14:51:11 by rjobert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 typedef struct s_list
 {
-	char			*buff;
+	char			buff[BUFFER_SIZE + 1];
 	struct s_list	*next;
 }	t_list;
 

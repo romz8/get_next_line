@@ -51,16 +51,9 @@ t_list	*read_to_node(int fd, int *byte_read)
 	node = malloc(sizeof(t_list));
 	if (!node)
 		return (NULL);
-	node->buff = malloc(BUFFER_SIZE + 1);
-	if (!node->buff)
-	{
-		free(node);
-		return (NULL);
-	}
 	*byte_read = read(fd, node->buff, BUFFER_SIZE);
 	if (*byte_read < 0)
 	{
-		free(node->buff);
 		free(node);
 		return (NULL);
 	}
@@ -126,7 +119,7 @@ void	get_all_line(t_list *byte_list, char **line)
 			j++;
 		}
 		if (byte_list->buff[j] == '\n')
-			(*line)[i] = byte_list->buff[j];
+			(*line)[i++] = byte_list->buff[j];
 		byte_list = byte_list->next;
 	}
 }
