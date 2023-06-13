@@ -1,17 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rjobert <rjobert@student.42barcelo>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/31 13:52:49 by rjobert           #+#    #+#             */
-/*   Updated: 2023/06/12 17:20:11 by rjobert          ###   ########.fr       */
+/*   Created: 2023/06/13 16:01:52 by rjobert           #+#    #+#             */
+/*   Updated: 2023/06/13 16:43:17 by rjobert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
+//as the bonus requires to read multiple fd at the same time,
+//while using only one static variable, we use a hash_table
+//which index will be the fd (forcing ourself to arbitrary
+//limit of 256 values)
 char	*get_next_line(int fd)
 {
 	char			*line;
@@ -41,9 +45,10 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-/*we create a node and char *s inside of size BUFFER + 1 -> protect both malloc
-read into it -> free node and its content if reading issue
-then null terminate the content and return the node */
+/* to avoid a time ouut, we modified our struct node 
+from mandatory partby declaring buff as an array and 
+not a char pointer : as we look for speed we leverage 
+more static memory while reading bytes into it  */
 t_list	*read_to_node(int fd, int *byte_read)
 {
 	t_list	*node;
@@ -64,9 +69,9 @@ t_list	*read_to_node(int fd, int *byte_read)
 
 //we receive a list - if it is null : we add a node to it,
 //which will be the first byte to be read
-//else we just build on prevous node
-//then as long as we have byte to read or that we don't find the \n character : 
-//we load nodes full of buffer read to the chain
+//else we just build on previous nodes
+//then as long as we have byte to read or that we don't find 
+//the \n character : we load nodes full of buffer to the chain
 void	load_chain_list(t_list **list, int fd)
 {	
 	t_list	*node;
@@ -96,8 +101,7 @@ void	load_chain_list(t_list **list, int fd)
 
 //we will load all of the linked list contennt (until null or \n) into line
 //1 - measure and malloc
-//2 - copy by rolling the nodes into the "line" from the linked list with 
-//ft_load_line (using pointer passed as ref to keep array position)
+//2 - copy by rolling the nodes into the "line" from the linked list 
 void	get_all_line(t_list *byte_list, char **line)
 {
 	int	i;
@@ -127,8 +131,9 @@ void	get_all_line(t_list *byte_list, char **line)
 // 1 - we will clean the list and the nodes 
 // 2 - we go the last node -> clone it and incorporate 
 // only the charcetrs after the next line
-// 3 - we will leave on the chain only the remaining characters so that 
-// read() will build on off 
+// 3 - we will clean the list and initiate it to our handover node
+// then the static variable hash table will keep only this node 
+// and build new nodes for next call on top on the cleant chain 
 void	clean_chain(t_list **buff_list)
 {
 	t_list	*handover_node;

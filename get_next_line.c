@@ -6,7 +6,7 @@
 /*   By: rjobert <rjobert@student.42barcelo>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/31 13:52:49 by rjobert           #+#    #+#             */
-/*   Updated: 2023/06/09 16:51:00 by rjobert          ###   ########.fr       */
+/*   Updated: 2023/06/13 20:54:06 by rjobert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ char	*get_next_line(int fd)
 	char			*line;
 	static t_list	*byte_list;
 
+	line = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line, 0) < 0)
 	{
 		free_chain(byte_list);
 		byte_list = NULL;
 		return (NULL);
 	}
-	line = NULL;
 	load_chain_list(&byte_list, fd);
 	if (!byte_list)
 		return (NULL);
@@ -69,10 +69,10 @@ t_list	*read_to_node(int fd, int *byte_read)
 }
 
 //we receive a list - if it is null : we add a node to it,
-//which will be the first byte to be read
-//else we just build on prevous node
+//which will be the first bytes to be read
+//else we just build on previous nodes
 //then as long as we have byte to read or that we don't find the \n character : 
-//we load nodes full of buffer read to the chain
+//we load nodes with full buffer to the chain
 void	load_chain_list(t_list **list, int fd)
 {	
 	t_list	*node;
@@ -100,10 +100,10 @@ void	load_chain_list(t_list **list, int fd)
 	*list = head;
 }
 
-//we will load all of the linked list contennt (until null or \n) into line
-//1 - measure and malloc
-//2 - copy by rolling the nodes into the "line" from the linked list with 
-//ft_load_line (using pointer passed as ref to keep array position)
+//we will load all of the linked list content (until null or \n) into line
+//1 - measure and malloc - see function descrition in utils
+//2 - copy by char by char from *buff and rolling the nodes into the line 
+//from the linked list  
 void	get_all_line(t_list *byte_list, char **line)
 {
 	int	i;
@@ -131,10 +131,11 @@ void	get_all_line(t_list *byte_list, char **line)
 }
 
 // 1 - we will clean the list and the nodes 
-// 2 - we go the last node -> clone it and incorporate 
+// 2 - we go to the last node -> clone it and incorporate 
 // only the charcetrs after the next line
-// 3 - we will leave on the chain only the remaining characters so that 
-// read() will build on off 
+// 3 - we will clean the entire chain and set it to the new node 
+// containing only the characters remaining efter the \n 
+// byte_list being a static var the next read() will build on top 
 void	clean_chain(t_list **buff_list)
 {
 	t_list	*handover_node;

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: rjobert <rjobert@student.42barcelo>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/06/12 17:17:41 by rjobert           #+#    #+#             */
-/*   Updated: 2023/06/12 17:17:47 by rjobert          ###   ########.fr       */
+/*   Created: 2023/06/13 16:02:25 by rjobert           #+#    #+#             */
+/*   Updated: 2023/06/13 16:44:36 by rjobert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ int	ft_search_nl(t_list *node)
 	return (0);
 }
 
-//we need to use char ** to ensure the memory we allocate 
 void	measure_n_create(t_list **byte_buff, char **line, int i)
 {
 	int		j;
@@ -72,10 +71,8 @@ void	measure_n_create(t_list **byte_buff, char **line, int i)
 		(*line)[i] = '\0';
 }
 
-//first we measure the length of the node in char / bytes
-//then we measure when is the \n if there is one
-// else we create a handover node that will contains the remaining characer
-//the purpose is to pass the remaining char in static t_list for the next line 
+//as we use an array and not a char poinnter in the bonus,
+//we make a modification in the handover_process here
 void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 {
 	while (byte_list->buff[j])

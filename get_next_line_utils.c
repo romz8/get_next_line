@@ -6,7 +6,7 @@
 /*   By: rjobert <rjobert@student.42barcelo>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 18:30:12 by rjobert           #+#    #+#             */
-/*   Updated: 2023/06/12 20:56:20 by rjobert          ###   ########.fr       */
+/*   Updated: 2023/06/13 21:52:29 by rjobert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,10 @@ int	ft_search_nl(t_list *node)
 	return (0);
 }
 
-//we need to use char ** to ensure the memory we allocate 
+//1 - we run through the entire linked list : as long as there are nodes, 
+//we read each node content char by char and count how many chars need 
+//to be read until we find \n (included) 
+//2 - we malloc this bytes quantity (1 char = 1 byte) 
 void	measure_n_create(t_list **byte_buff, char **line, int i)
 {
 	int		j;
@@ -69,14 +72,17 @@ void	measure_n_create(t_list **byte_buff, char **line, int i)
 		byte_list = byte_list->next;
 	}
 	*line = malloc((i + 1) * sizeof(char));
-	if (*line != NULL)
-		(*line)[i] = '\0';
+	if (*line == NULL)
+		return ;
+	(*line)[i] = '\0';
 }
 
-//first we measure the length of the node in char / bytes
-//then we measure when is the \n if there is one
-// else we create a handover node that will contains the remaining characer
-//the purpose is to pass the remaining char in static t_list for the next line 
+//1 - we measure the length of the node in char / bytes
+//2 - we measure when is the \n if there is one
+//3 - allocate corresponding memory for the buffer in 
+//handover node that will contain the remaining characer : 
+//the purpose is to pass the remaining char 
+//in static t_list for the next line 
 void	ft_passover(t_list *byte_list, t_list **handover_node, int i, int j)
 {
 	while (byte_list->buff[j])
