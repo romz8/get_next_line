@@ -2,3 +2,5 @@
 *.out
 .*.swp
 *.gch
+.DS_Store
+.vscode
